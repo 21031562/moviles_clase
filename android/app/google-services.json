@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069519322720",
+    "project_id": "trabajo-clase-uriel",
+    "storage_bucket": "trabajo-clase-uriel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069519322720:android:678dad78e9f9b310f30d05",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjDKGTBYxCozF3sNnnswD5HrDXe1Ui1H8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
