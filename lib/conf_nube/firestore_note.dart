@@ -1,27 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreNote {
-  FirebaseFirestore conexion = FirebaseFirestore.instance;
-
-  CollectionReference? notesCollection;
+  final FirebaseFirestore conexion = FirebaseFirestore.instance;
+  late final CollectionReference notesCollection;
 
   FirestoreNote() {
     notesCollection = conexion.collection("notes");
   }
 
-  insertNote(Map<String, dynamic> note) async {
-    notesCollection!.doc().set(note);
+  /// CREATE
+  Future<bool> insertNote(Map<String, dynamic> note) async {
+    try {
+      await notesCollection.add(note);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
-  updateNote(String idNote, Map<String, dynamic> note) async {
-    notesCollection!.doc(idNote).update(note);
-  }
-
-  deleteNote(String idNote) async {
-    notesCollection!.doc(idNote).delete();
-  }
-
+  /// READ (en tiempo real)
   Stream<QuerySnapshot> selectNote() {
-    return notesCollection!.snapshots();
+    return notesCollection.snapshots();
+  }
+
+  /// UPDATE
+  Future<bool> updateNote(String idNote, Map<String, dynamic> note) async {
+    try {
+      await notesCollection.doc(idNote).update(note);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  /// DELETE
+  Future<bool> deleteNote(String idNote) async {
+    try {
+      await notesCollection.doc(idNote).delete();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 }

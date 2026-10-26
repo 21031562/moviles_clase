@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/global_values.dart';
 import 'package:flutter_application_1/components/theme_app.dart';
 import 'package:flutter_application_1/firebase_options.dart';
+import 'package:flutter_application_1/screens/add_note_nube_screen_.dart';
 import 'package:flutter_application_1/screens/add_note_screen.dart';
 import 'package:flutter_application_1/screens/api_popular_screen.dart';
 import 'package:flutter_application_1/screens/dashboard_screens.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
             "/add": (context) => AddNoteScreen(),
             "/register": (context) => RegisterScreen(),
             "/notesNube": (context) => NotesScreensNube(),
+            "/addNube": (context) => AddNoteNubeScreen(),
             "/movie": (context) => ApiPopularScreen(),
           },
           theme: tema,

@@ -1,90 +1,99 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/database/notes_dao.dart';
-import 'package:flutter_application_1/database/notes_db.dart';
+import 'package:flutter_application_1/conf_nube/firestore_note.dart';
 
-class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+class AddNoteNubeScreen extends StatefulWidget {
+  const AddNoteNubeScreen({super.key});
 
   @override
-  State<AddNoteScreen> createState() => _AddNoteScreenState();
+  State<AddNoteNubeScreen> createState() => _AddNoteNubeScreenState();
 }
 
-class _AddNoteScreenState extends State<AddNoteScreen> {
-  NotesDb? notesDb;
+class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
+  final firestoreNote = FirestoreNote();
+  final conTitle = TextEditingController();
+  final conContent = TextEditingController();
+  QueryDocumentSnapshot? note;
+  bool _cargado = false;
+
   @override
-  void initState() {
-    super.initState();
-    notesDb = NotesDb();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_cargado) return;
+    _cargado = true;
+    final args = ModalRoute.of(context)!.settings.arguments;
+    if (args != null) {
+      note = args as QueryDocumentSnapshot;
+      conTitle.text = note!.get('title');
+      conContent.text = note!.get('content');
+    }
+  }
+
+  @override
+  void dispose() {
+    conTitle.dispose();
+    conContent.dispose();
+    super.dispose();
+  }
+
+  Future<void> _guardar() async {
+    if (conTitle.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El título es obligatorio')),
+      );
+      return;
+    }
+
+    final data = {
+      "title": conTitle.text.trim(),
+      "content": conContent.text.trim(),
+      "dateNote": DateTime.now().toString().substring(0, 10),
+    };
+
+    final bool ok = (note == null)
+        ? await firestoreNote.insertNote(data)
+        : await firestoreNote.updateNote(note!.id, data);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(!ok
+            ? 'Ocurrió un error al guardar la nota'
+            : note == null
+                ? 'Nota guardada correctamente'
+                : 'Nota actualizada correctamente'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    if (ok) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final conTitle = TextEditingController();
-    final conContent = TextEditingController();
-    NotesDao? note;
-
-    if (ModalRoute.of(context)!.settings.arguments != null) {
-      note = ModalRoute.of(context)!.settings.arguments as NotesDao;
-      conTitle.text = note.title!;
-      conContent.text = note.content!;
-    }
-
-    final txtTitle = TextFormField(
-      controller: conTitle,
-      decoration: InputDecoration(labelText: 'Título'),
-    );
-    final txtContent = TextFormField(
-      maxLines: 5,
-      controller: conContent,
-      decoration: InputDecoration(labelText: 'Contenido'),
-    );
-    final space = SizedBox(height: 16.0);
-    final btnSave = ElevatedButton(
-      onPressed: () {
-        if (note == null) {
-          notesDb!
-              .INSERT({
-                "title": conTitle.text,
-                "content": conContent.text,
-                "dateNote": "2026-09-25",
-              })
-              .then((value) {
-                if (value > 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Nota guardada correctamente'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
-              });
-        } else {
-          notesDb!
-              .UPDATE({
-                "idNote": note.idNote,
-                "title": conTitle.text,
-                "content": conContent.text,
-                "dateNote": "2026-09-25",
-              })
-              .then((value) {
-                if (value > 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Nota actualizada correctamente'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
-              });
-        }
-      },
-      child: const Text('Guardar'),
-    );
+    final space = const SizedBox(height: 16.0);
     return Scaffold(
-      appBar: AppBar(title: Text('Agregar Nota'), leading: Container()),
-      body: Column(children: [txtTitle, space, txtContent, space, btnSave]),
+      appBar: AppBar(
+        title: Text(note == null ? 'Agregar Nota (Nube)' : 'Editar Nota (Nube)'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: conTitle,
+              decoration: const InputDecoration(labelText: 'Título'),
+            ),
+            space,
+            TextFormField(
+              controller: conContent,
+              maxLines: 5,
+              decoration: const InputDecoration(labelText: 'Contenido'),
+            ),
+            space,
+            ElevatedButton(onPressed: _guardar, child: const Text('Guardar')),
+          ],
+        ),
+      ),
     );
   }
 }

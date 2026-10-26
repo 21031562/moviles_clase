@@ -45,7 +45,7 @@ class _NotesScreensState extends State<NotesScreensNube> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add').then((value) => _recargar());
+          Navigator.pushNamed(context, '/addNube').then((value) => _recargar());
         },
         child: Icon(Icons.note_add_outlined),
       ),
@@ -97,7 +97,7 @@ class _NotesScreensState extends State<NotesScreensNube> {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  "/add",
+                  "/addNube",
                   arguments: note,
                 ).then((value) => _recargar());
               },
@@ -117,16 +117,17 @@ class _NotesScreensState extends State<NotesScreensNube> {
         TextButton(
           child: Text("Aceptar"),
           onPressed: () {
+            final messenger = ScaffoldMessenger.of(context);
             firestoreNotes.deleteNote(idNote).then((value) {
-              if (value > 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Nota eliminada correctamente'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                _recargar();
-              }
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(value
+                      ? 'Nota eliminada correctamente'
+                      : 'Ha ocurrido un problema con el borrado'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+              if (value) _recargar();
             });
             Navigator.of(context).pop();
           },
