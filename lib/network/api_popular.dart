@@ -1,12 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter_application_1/models/popular_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ApiPopular {
-  Uri link = Uri.parse(
-    "https://api.themoviedb.org/3/movie/popular?api_key=fae41dc0d9724b99048e978672356175",
-  );
+  final String? apiKey = dotenv.env['api_key'];
+  late Uri link;
+
+  ApiPopular() {
+    link = Uri.parse(
+      "https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=es-MX&page=1",
+    );
+  }
+
   Future<List<PopularModel>?> getAllPopular() async {
     var response = await http.get(link);
     if (response.statusCode == 200) {

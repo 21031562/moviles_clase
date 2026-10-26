@@ -64,8 +64,7 @@ class _ApiPopularScreenState extends State<ApiPopularScreen> {
           Expanded(
             child: pelicula.posterPath.isNotEmpty
                 ? FadeInImage.assetNetwork(
-                    // Reemplaza esta ruta por el recurso de placeholder de tu proyecto.
-                    placeholder: 'assets/loading.gif',
+                    placeholder: 'assets/loading1.gif',
                     image:
                         'https://image.tmdb.org/t/p/w500${pelicula.posterPath}',
                     width: double.infinity,

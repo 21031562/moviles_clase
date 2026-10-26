@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_application_1/components/global_values.dart';
 import 'package:flutter_application_1/components/theme_app.dart';
 import 'package:flutter_application_1/firebase_options.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_application_1/screens/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
