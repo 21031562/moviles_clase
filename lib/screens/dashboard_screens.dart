@@ -46,6 +46,15 @@ class DashboardScreens extends StatelessWidget {
               subtitle: Text('Accede a tus notas guardadas en la nube'),
             ),
             ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Lista de películas populares'),
+              trailing: Icon(Icons.arrow_forward_outlined),
+              onTap: () {
+                Navigator.pushNamed(context, '/movie');
+              },
+              subtitle: Text('Accede a la lista de películas populares'),
+            ),
+            ListTile(
               leading: Icon(Icons.logout),
               title: Text('Cerrar Sesión'),
               trailing: Icon(Icons.arrow_forward_outlined),
