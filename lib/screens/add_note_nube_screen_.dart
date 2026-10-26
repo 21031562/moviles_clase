@@ -13,6 +13,8 @@ class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
   final firestoreNote = FirestoreNote();
   final conTitle = TextEditingController();
   final conContent = TextEditingController();
+  final conDate = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
   QueryDocumentSnapshot? note;
   bool _cargado = false;
 
@@ -26,6 +28,26 @@ class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
       note = args as QueryDocumentSnapshot;
       conTitle.text = note!.get('title');
       conContent.text = note!.get('content');
+      final data = note!.data() as Map<String, dynamic>;
+      if (data['dateNote'] != null) {
+        _selectedDate = DateTime.tryParse(data['dateNote']) ?? DateTime.now();
+      }
+    }
+    conDate.text = _selectedDate.toString().substring(0, 10);
+  }
+
+  Future<void> _seleccionarFecha() async {
+    final DateTime? fecha = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (fecha != null) {
+      setState(() {
+        _selectedDate = fecha;
+        conDate.text = fecha.toString().substring(0, 10);
+      });
     }
   }
 
@@ -33,6 +55,7 @@ class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
   void dispose() {
     conTitle.dispose();
     conContent.dispose();
+    conDate.dispose();
     super.dispose();
   }
 
@@ -47,7 +70,7 @@ class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
     final data = {
       "title": conTitle.text.trim(),
       "content": conContent.text.trim(),
-      "dateNote": DateTime.now().toString().substring(0, 10),
+      "dateNote": conDate.text,
     };
 
     final bool ok = (note == null)
@@ -88,6 +111,16 @@ class _AddNoteNubeScreenState extends State<AddNoteNubeScreen> {
               controller: conContent,
               maxLines: 5,
               decoration: const InputDecoration(labelText: 'Contenido'),
+            ),
+            space,
+            TextFormField(
+              controller: conDate,
+              readOnly: true,
+              onTap: _seleccionarFecha,
+              decoration: const InputDecoration(
+                labelText: 'Fecha',
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
             ),
             space,
             ElevatedButton(onPressed: _guardar, child: const Text('Guardar')),
